@@ -1,0 +1,1 @@
+Makefile, makefile y MAKEFILE son archivos distintos, y lo mismo pasa con main.c y Main.c. Cuando algo “no se encuentra” y el nombre parece igual, revisa las mayúsculas.
