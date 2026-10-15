@@ -344,3 +344,57 @@ To https://github.com/leninavb/embedded-practice.git
  * [new branch]      main -> main
 branch 'main' set up to track 'origin/main'.
 lenin@andres:~/embedded-practice$ 
+
+
+
+1u << pos crea una máscara de 32 bits, y ~ invierte todos sus bits.
+| es OR bit a bit y || es OR lógico.
+Para índices el límite es pos > 31, y para campos es pos + width > 32.
+1u << 32 es comportamiento indefinido, y por eso width == 32 se trata aparte.
+Un Makefile separa dependencias con espacios, no con /.
+Una prueba que pasa no prueba que el código esté bien: las originales no detectaban return 0u en field_write con width == 0.
+count + 1; no hace nada, y se necesita count++;.
+
+
+# Día 2 - Operaciones de bits
+
+## Operadores
+- `|` OR: enciende bits. `reg | (1u << pos)`
+- `&` AND: apaga o lee bits. `reg & ~(1u << pos)` apaga, `reg & (1u << pos)` lee
+- `^` XOR: invierte bits. `reg ^ (1u << pos)`
+- `~` NOT: invierte todos los bits (también los ceros de la izquierda)
+- `<<`: desplaza a la izquierda. `1u << pos` crea una máscara con un 1 en `pos`
+- `(1u << n) - 1`: crea n unos seguidos
+- Con tipos sin signo, `(uint32_t)-1` = `0xFFFFFFFF`
+
+## Método de Kernighan (bit_count_kernighan)
+- `reg & (reg - 1)` apaga el bit en 1 más bajo.
+- Se repite hasta que `reg` es 0. El número de vueltas = bits en 1.
+- La condición del `while` es `reg != 0`. Con `== 0` el bucle nunca corre
+  (o se cuelga si reg es 0).
+
+## Comparación de vueltas
+
+| Valor | Versión simple (for) | Kernighan |
+|---|---|---|
+| 0x00000000 | 32 | 0 |
+| 0x00000001 | 32 | 1 |
+| 0xA5A5A5A5 | 32 | 16 |
+| 0xFFFFFFFF | 32 | 32 |
+
+- La versión simple siempre da 32 vueltas.
+- Kernighan da tantas vueltas como bits en 1.
+- Conviene Kernighan cuando casi siempre hay pocos bits en 1.
+- Con muchos bits en 1 la diferencia casi desaparece.
+
+## Errores que tuve y cómo los resolví
+- Llave `}` faltante en test_smoke.c.
+- `MakeFile` vs `Makefile`: Linux distingue mayúsculas.
+- `.PHONY` porque existe una carpeta llamada `test`.
+- En el Makefile puse `build/test_smoke/test_bits` (con `/`) en vez de un espacio.
+- `pos > 32` debía ser `pos > 31` (índice 0-31), pero en campos es `pos + width > 32`.
+- `width == 0` en field_write devolvía 0 y borraba el registro; debe devolver `reg`.
+- `1u << 32` es comportamiento indefinido: tratar `width == 32` aparte.
+- `|` vs `||`: bit a bit contra lógico.
+- `count + 1;` no hace nada; se necesita `count++;`.
+- Las pruebas originales no detectaban algunos errores: agregar mis propias pruebas.

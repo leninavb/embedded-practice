@@ -62,6 +62,24 @@ void test_bit_count(void) {
     TEST_ASSERT_EQUAL_UINT8(16, bit_count(0xA5A5A5A5));
     TEST_ASSERT_EQUAL_UINT8(32, bit_count(0xFFFFFFFF));
 }
+void test_field_write_ancho_cero(void) {
+    TEST_ASSERT_EQUAL_HEX32(0x12345678, field_write(0x12345678, 4, 0, 0xF));
+}
+
+void test_field_write_ancho_completo(void) {
+    TEST_ASSERT_EQUAL_HEX32(0xDEADBEEF, field_write(0x12345678, 0, 32, 0xDEADBEEF));
+}
+
+void test_field_extract_ancho_completo(void) {
+    TEST_ASSERT_EQUAL_HEX32(0xABCD1234, field_extract(0xABCD1234, 0, 32));
+}
+
+void test_bit_count_kernighan(void) {
+    TEST_ASSERT_EQUAL_UINT8(0,  bit_count_kernighan(0x00000000));
+    TEST_ASSERT_EQUAL_UINT8(1,  bit_count_kernighan(0x00000001));
+    TEST_ASSERT_EQUAL_UINT8(16, bit_count_kernighan(0xA5A5A5A5));
+    TEST_ASSERT_EQUAL_UINT8(32, bit_count_kernighan(0xFFFFFFFF));
+}
 
 int main(void) {
     UNITY_BEGIN();
@@ -76,5 +94,9 @@ int main(void) {
     RUN_TEST(test_field_write_valor_muy_grande);
     RUN_TEST(test_field_write_invalido);
     RUN_TEST(test_bit_count);
+    RUN_TEST(test_field_write_ancho_cero);
+    RUN_TEST(test_field_write_ancho_completo);
+    RUN_TEST(test_field_extract_ancho_completo);
+    RUN_TEST(test_bit_count_kernighan);
     return UNITY_END();
 }

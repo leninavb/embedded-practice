@@ -67,6 +67,28 @@ uint32_t field_write(uint32_t reg, uint8_t pos, uint8_t width, uint32_t value)
 
 uint8_t bit_count(uint32_t reg)
 {
-    /* TODO */
-    return 0;
+    uint8_t count = 0;
+
+    for (uint8_t i = 0; i < 32; i++) {
+        uint32_t mask = (1u << i) & reg;
+        if (mask != 0) {
+            count++;
+        }
+    }
+    return count;
+
+
+}
+
+    /* Kernighan Method*/
+uint8_t bit_count_kernighan(uint32_t reg)
+{
+    uint8_t count = 0;
+
+    while (reg != 0) {
+        reg = reg & (reg-1);
+        count++;
+    }
+
+    return count;
 }
