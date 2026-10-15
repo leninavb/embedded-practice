@@ -398,3 +398,38 @@ count + 1; no hace nada, y se necesita count++;.
 - `|` vs `||`: bit a bit contra lógico.
 - `count + 1;` no hace nada; se necesita `count++;`.
 - Las pruebas originales no detectaban algunos errores: agregar mis propias pruebas.
+
+
+
+# Pruebas unitarias con Unity
+
+## Qué es una prueba unitaria
+- Verifica una función pequeña de forma aislada, sin hardware ni el sistema completo.
+- Yo llamo a la función con una entrada y comparo con la salida que espero.
+- El valor esperado lo decido yo con un razonamiento (criterio de aceptación).
+  Unity no sabe qué debería hacer la función, solo compara números.
+
+## Tipos de archivo
+- `.c` implementación: el código que hace el trabajo (`src/bits.c`)
+- `.h` cabecera: declara nombre, parámetros y tipo de retorno (`include/bits.h`).
+  Sin la declaración, GCC marca `implicit declaration of function`.
+- `test_*.c` pruebas: llaman a mis funciones y comprueban resultados.
+- El linker junta los `.c` compilados al final.
+
+## Cómo funciona Unity
+- `TEST_ASSERT_EQUAL_HEX32(esperado, obtenido)` es una macro (código C, no un comando).
+- Si los valores difieren, anota el fallo, imprime `Expected ... Was ...` y la línea,
+  y detiene esa prueba (los asserts siguientes no se revisan).
+- `UNITY_BEGIN()` inicia, `RUN_TEST(f)` corre cada prueba, `UNITY_END()` imprime el
+  resumen y devuelve un código distinto de 0 si hubo fallos (por eso make marca Error 1).
+- Una prueba que pasa no demuestra que el código esté bien: solo cubre esos casos.
+  Hay que agregar mis propios casos límite.
+
+## Relación con mi trabajo
+- Validación de sistema: producto completo, señales, analizador lógico.
+- Prueba unitaria: una función aislada, antes de integrar (proceso en V).
+
+## Errores del día
+- Faltaba la declaración en el .h → `implicit declaration`.
+- Escribí `RUN_TESTtest_...` sin paréntesis: si un nombre sale pegado en el error,
+  revisa paréntesis o espacios.
